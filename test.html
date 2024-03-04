@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+<body>
+    <button class="add">Add to queue</button>
+    <button class="add" count="10">Add 10 to queue</button>
+    <button class="add" count="20">Add 20 to queue</button>
+    <button id="clear">Clear queue</button>
+    <br>
+    <pre id="localStorage">Loading queue...</pre>
+</body>
+
+<script src="./qfetch.js"></script>
+
+<script>
+    const addBtns = document.querySelectorAll('.add');
+    const clearBtn = document.getElementById('clear');
+    const localStorageEl = document.getElementById('localStorage');
+
+    clearBtn.addEventListener('click', () => {
+        localStorage.removeItem('qfetch');
+    });
+
+    addBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const count = btn.getAttribute('count') || 1;
+            for (let i = 0; i < count; i++) {
+                qfetch('https://localhost:50000')
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(err => console.log(err));
+            }
+        });
+    });
+
+    setInterval(() => {
+        const json = JSON.stringify(JSON.parse(localStorage.getItem('qfetch')), null, "\t")
+        const display = (json !== "null" ? json : 'No queue')
+        if (localStorageEl.innerHTML !== display) localStorageEl.innerHTML = display;
+    }, 100);
+
+</script>
+
+</html>
